@@ -1,0 +1,10 @@
+vision/*Zone.Identifier
+vision/videos/
+vision/__pycache__/
+
+api/tmp/
+api/pb_data/
+
+ui/node_modules/
+
+.env

@@ -1,0 +1,36 @@
+# Air configuration file for hot reloading
+root = "."
+tmp_dir = "tmp"
+
+[build]
+# Binary file produced by go build
+bin = "./tmp/main serve"
+# Command to execute the build
+cmd = "go build -o ./tmp/main ./cmd/api/main.go"
+# File extensions to watch for changes
+include_ext = ["go"]
+# Binary args when executing
+bin_args = []
+# Exclude directories from being watched
+exclude_dir = ["assets", "tmp", "vendor", "pb_data"]
+# Exclude specific files from being watched
+exclude_file = []
+# Kill process before starting a new one
+kill_delay = "0s"
+# Prevent multiple builds if changes are detected in rapid succession
+delay = 1000 # ms
+
+[log]
+# Show log time
+time = true
+
+[color]
+# Customize colors
+main = "magenta"
+watcher = "cyan"
+build = "yellow"
+runner = "green"
+
+[misc]
+# Delete tmp directory on exit
+clean_on_exit = true

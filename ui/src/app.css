@@ -1,0 +1,91 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@theme {
+	--app-sidebar-width: 75px;
+	--page-sidebar-width: 234px;
+
+	--color-txtPrimary: #1a1a24;
+	--color-txtHint: #617079;
+	--color-txtDisabled: #a0a6ac;
+	--color-primary: #1a1a24;
+	--color-body: #f8f9fa;
+	--color-base: #ffffff;
+	--color-baseAlt1: #e3e8ed;
+	--color-baseAlt2: #d7dde3;
+	--color-baseAlt3: #c9d0da;
+	--color-baseAlt4: #a5b0c0;
+	--color-info: #5499e8;
+	--color-infoAlt: #cee2f8;
+	--color-success: #32ad84;
+	--color-successAlt: #c4eedc;
+	--color-danger: #e34562;
+	--color-dangerAlt: #f7cad2;
+	--color-warning: #ff944d;
+	--color-warningAlt: #ffd4b8;
+	--color-overlay: rgba(53, 71, 104, 0.28);
+	--color-tooltip: rgba(0, 0, 0, 0.85);
+	--color-shadow: rgba(0, 0, 0, 0.06);
+}
+
+@layer components {
+	/* * { */
+	/* 	@apply transition-colors duration-200 ease-in-out; */
+	/* } */
+
+	input:-webkit-autofill,
+	input:-webkit-autofill:hover,
+	input:-webkit-autofill:focus,
+	textarea:-webkit-autofill,
+	textarea:-webkit-autofill:hover,
+	textarea:-webkit-autofill:focus,
+	select:-webkit-autofill,
+	select:-webkit-autofill:hover,
+	select:-webkit-autofill:focus {
+		/* -webkit-box-shadow: 0 0 0px 1000px #1b1b6c inset; */
+		transition: background-color 5000s ease-in-out 0s;
+	}
+
+	[data-theme='dark'] {
+		--color-txtPrimary: #1a1a24;
+		--color-txtHint: #617079;
+		--color-txtDisabled: #a0a6ac;
+		--color-primary: #1a1a24;
+		--color-body: #f8f9fa;
+		--color-base: #ffffff;
+		--color-baseAlt1: #e3e8ed;
+		--color-baseAlt2: #d7dde3;
+		--color-baseAlt3: #c9d0da;
+		--color-baseAlt4: #a5b0c0;
+		--color-info: #5499e8;
+		--color-infoAlt: #cee2f8;
+		--color-success: #32ad84;
+		--color-successAlt: #c4eedc;
+		--color-danger: #e34562;
+		--color-dangerAlt: #f7cad2;
+		--color-warning: #ff944d;
+		--color-warningAlt: #ffd4b8;
+		--color-overlay: rgba(53, 71, 104, 0.28);
+		--color-tooltip: rgba(0, 0, 0, 0.85);
+		--color-shadow: rgba(0, 0, 0, 0.06);
+	}
+
+	[data-theme='rose-pine'] {
+		--color-base: #191724;
+		--color-surface: #1f1d2e;
+		--color-overlay: #26233a;
+		--color-muted: #6e6a86;
+		--color-subtle: #908caa;
+		--color-text: #e0def4;
+		--color-love: #eb6f92;
+		--color-gold: #f6c177;
+		--color-rose: #ebbcba;
+		--color-pine: #31748f;
+		--color-foam: #9ccfd8;
+		--color-iris: #c4a7e7;
+		--color-highlight-low: #21202e;
+		--color-highlight-med: #403d52;
+		--color-highlight-high: #524f67;
+	}
+}
