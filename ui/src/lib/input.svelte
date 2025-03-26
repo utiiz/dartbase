@@ -3,7 +3,7 @@
 </script>
 
 <div
-	class="bg-baseAlt1 focus:bg-baseAlt2 focus-within:bg-baseAlt2 group rounded-sm px-4 py-2 transition-colors duration-300"
+	class="bg-baseAlt1 focus:bg-baseAlt2 focus-within:bg-baseAlt2 group flex-1 rounded-sm px-4 py-2 transition-colors duration-300"
 >
 	<label
 		for={name}

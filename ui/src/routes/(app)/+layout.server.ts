@@ -1,4 +1,3 @@
-
 import pb from '$lib/pocketbase';
 import type { PageServerLoad } from './$types';
 

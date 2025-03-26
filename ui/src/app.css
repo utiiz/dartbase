@@ -5,6 +5,7 @@
 @theme {
 	--app-sidebar-width: 75px;
 	--page-sidebar-width: 234px;
+	--wrapper-width: 850px;
 
 	--color-txtPrimary: #1a1a24;
 	--color-txtHint: #617079;

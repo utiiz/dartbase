@@ -8,10 +8,10 @@
 
 	let { children, data } = $props();
 	let initials =
-		data.user?.name
-			?.split(' ')
-			.map((name: string) => name[0])
-			.join('') ?? '??';
+		(data.user?.name ?? '')
+			.split(' ')
+			.map((name: string) => name[0] ?? '')
+			.join('') || '??';
 </script>
 
 <div class="flex h-full">

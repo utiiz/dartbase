@@ -23,9 +23,8 @@
 				<MenuItem
 					icon={IconHomeGear}
 					label="Application"
-					link="/settings/application"
-					selected={page.url.pathname === '/settings' ||
-						page.url.pathname === '/settings/application'}
+					link="/settings"
+					selected={page.url.pathname === '/settings'}
 				/>
 				<MenuItem
 					icon={IconSendPlane}
@@ -64,7 +63,7 @@
 			</div>
 		</div>
 	</aside>
-	<div class="p-4">
+	<div class="flex-1 p-7">
 		{@render children()}
 	</div>
 </div>
