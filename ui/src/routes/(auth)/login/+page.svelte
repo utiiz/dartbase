@@ -4,6 +4,7 @@
 	import Input from '$lib/input.svelte';
 	import Logo from '$lib/logo.svelte';
 	import Toast from '$lib/toast.svelte';
+	import { toastStore } from '$lib/stores/toastStore.js';
 
 	let { data } = $props();
 	let show = $state(false);
@@ -17,8 +18,8 @@
 
 	const { form, errors, message, enhance } = superForm(data.form, {
 		onResult: ({ result }) => {
-			if (result.type === 'failure') {
-				showToast();
+			if (result.type === 'failure' && result.data) {
+				toastStore.show(result.data.form.message, 'error', 5000);
 			}
 		}
 	});
@@ -29,8 +30,8 @@
 		<div class="mx-auto w-md">
 			<div class="flex flex-col gap-12">
 				<div class="flex justify-center gap-2">
-					<Logo />
-					<span class="text-2xl">Dart<strong>Base</strong></span>
+					<Logo class="size-10 fill-none" />
+					<span class="text-txtPrimary text-2xl">Dart<strong>Base</strong></span>
 				</div>
 
 				<div>
@@ -72,7 +73,7 @@
 
 								<button
 									type="submit"
-									class="group bg-primary hover:bg-primary/90 inline-flex h-14 w-full cursor-pointer items-center justify-center gap-x-2 rounded-sm border border-transparent px-4 py-3 text-sm font-semibold text-white focus:outline-hidden disabled:pointer-events-none disabled:opacity-50"
+									class="group bg-primary hover:bg-primary/90 text-body inline-flex h-14 w-full cursor-pointer items-center justify-center gap-x-2 rounded-sm border border-transparent px-4 py-3 text-sm font-semibold focus:outline-hidden disabled:pointer-events-none disabled:opacity-50"
 								>
 									<span>Login</span>
 									<IconArrowRight

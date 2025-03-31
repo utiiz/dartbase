@@ -49,6 +49,7 @@ class DartDetector:
         self.timer_history = deque(maxlen=5)
 
         self.should_send_dart_data = False
+        self.should_send_removed_dart_event = False
 
         self.dart_count = 0
         self.darts = []
@@ -209,7 +210,7 @@ class DartDetector:
             self.timer -= 1
             self.timer_history.append(self.timer)
 
-            # if len(self.timer_history) == self.timer_history.maxlen and all(4 <= t <= 5 for t in self.timer_history):
+            # if len(self.timer_history) == self.timer_history.maxlen and all(7 <= t <= 10 for t in self.timer_history):
             #     self.state = State.REMOVING_DARTS
 
             if self.timer == 0:

@@ -11,6 +11,7 @@ import (
 type Client struct {
 	UUID       string
 	Connection *websocket.Conn
+	Type       string
 	LastActive time.Time
 	// Add more client-specific fields as needed
 }
@@ -106,14 +107,19 @@ func (cm *ConnectionManager) GetClients() []*Client {
 // ---------------------------- //
 
 type Message struct {
-	Type string      `json:"type"`
-	Data interface{} `json:"data"`
+	Type string `json:"type"`
+	Data any    `json:"data"`
 }
 
 type Data struct {
 }
 
-type Init struct {
+type InitEvent struct {
+	Data
+	UUID string `json:"uuid"`
+}
+
+type StartEvent struct {
 	Data
 	UUID string `json:"uuid"`
 }

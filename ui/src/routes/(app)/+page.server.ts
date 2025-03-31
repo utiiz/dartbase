@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ cookies }) => {
 		cookies.set('theme', theme, { path: '/', maxAge: 60 * 60 * 24 * 365 });
 	}
 
-	return {};
+	redirect(303, '/games');
 };
 
 export const actions: Actions = {

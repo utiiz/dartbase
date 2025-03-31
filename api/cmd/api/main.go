@@ -21,7 +21,12 @@ func main() {
 			return h.WS(e, cm)
 		})
 
-		_ = se.Router.Group("/v1")
+		api := se.Router.Group("/api")
+		v1 := api.Group("/v1")
+
+		v1.GET("/dartboard/{uuid}", func(e *core.RequestEvent) error {
+			return h.GetDartboard(e, cm)
+		})
 		return se.Next()
 	})
 	if err := app.Start(); err != nil {

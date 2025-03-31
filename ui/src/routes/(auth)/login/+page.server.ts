@@ -29,14 +29,13 @@ export const actions: Actions = {
 		}
 
 		try {
-			console.log(form.data);
 			await pb.collection('users').authWithPassword(form.data.email, form.data.password);
-			if (pb.authStore.isValid) {
-				throw redirect(303, '/');
-			}
 		} catch (error) {
-			return message(form, 'Invalid login credentials.');
+			// failure
+			return message(form, 'Invalid login credentials.', { status: 401 });
 		}
-		return message(form, 'Login successful');
+		if (pb.authStore.isValid) {
+			throw redirect(303, '/');
+		}
 	}
 };

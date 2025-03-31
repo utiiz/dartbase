@@ -14,6 +14,24 @@ class InitData:
         }
 
 
+class DartData:
+    def __init__(self, point, score):
+        self.x = point[0]
+        self.y = point[1]
+        self.score = {
+            "bed": score[0],
+            "segment": score[1],
+            "score": score[2]
+        }
+
+    def to_json(self):
+        return {
+            "x": self.x,
+            "y": self.y,
+            "score": self.score
+        }
+
+
 class Message:
     def __init__(self, type, data):
         self.type = type
@@ -22,7 +40,7 @@ class Message:
     def to_json(self):
         return {
             "type": self.type,
-            "data": self.data.to_json()
+            "data": None if self.data is None else self.data.to_json()
         }
 
 
@@ -32,7 +50,7 @@ class WebSocket:
         self.on_message = on_message
         self.ws = websocket.WebSocketApp("ws://127.0.0.1:8090/ws",
                                          on_open=self.on_open,
-                                         on_message=self.on_message,
+                                         on_message=self.on_message_handler,
                                          on_error=self.on_error,
                                          on_close=self.on_close)
 
@@ -41,6 +59,10 @@ class WebSocket:
 
     def on_error(self, ws, error):
         print(f"Error occurred: {error}")
+
+    def on_message_handler(self, ws, message):
+        if self.on_message is not None:
+            self.on_message(ws, message)
 
     def on_open(self, ws):
         print("Connection successfully opened")
@@ -52,6 +74,7 @@ class WebSocket:
 
     def on_close(self, ws, close_status_code, close_msg):
         print(f"Connection closed: {close_status_code} - {close_msg}")
+        self.ws.close()
 
 
 if __name__ == "__main__":

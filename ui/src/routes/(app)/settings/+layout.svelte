@@ -8,6 +8,7 @@
 	import IconUninstall from '$lib/icon-uninstall.svelte';
 	import IconInstall from '$lib/icon-install.svelte';
 	import { page } from '$app/state';
+	import IconUser from '$lib/icon-user.svelte';
 
 	let { children, data } = $props();
 </script>
@@ -25,6 +26,12 @@
 					label="Application"
 					link="/settings"
 					selected={page.url.pathname === '/settings'}
+				/>
+				<MenuItem
+					icon={IconUser}
+					label="User"
+					link="/settings/user"
+					selected={page.url.pathname === '/settings/user'}
 				/>
 				<MenuItem
 					icon={IconSendPlane}

@@ -3,10 +3,9 @@ from os.path import join, dirname
 from dotenv import load_dotenv
 import cv2
 import json
-import websockets
 from threading import Thread
-from DartDetector import DartDetector
-from WebSocket import WebSocket, Message
+from DartDetector import DartDetector, State
+from WebSocket import WebSocket, Message, DartData
 from Triangulator import Triangulator, Camera
 from Dartboard import Dartboard
 
@@ -22,13 +21,10 @@ class Dart:
 
 
 class DartManager:
-    def __init__(self, dartboard, frame_rate=30, debug=False):
-        env_path = join(dirname(__file__), ".env")
-        load_dotenv(env_path)
-        self.UUID = os.environ.get("UUID")
-
+    def __init__(self, dartboard, websocket, frame_rate=30, debug=False):
         self.dart = None
         self.dartboard = dartboard
+        self.websocket = websocket
         self.frame_rate = frame_rate
         self.debug = debug
 
@@ -48,9 +44,15 @@ class DartManager:
         triangulator.add_camera(camera_b)
 
         dart = Dart()
+        ok = False
         while True:
             detector1.process_frame()
             detector2.process_frame()
+
+            if ok and detector1.state == State.EMPTY and detector2.state == State.EMPTY:
+                self.send_removing_darts()
+                ok = False
+                continue
 
             if detector1.dart is not None:
                 dart.x_1 = detector1.dart.x
@@ -58,11 +60,12 @@ class DartManager:
                 dart.x_2 = detector2.dart.x
 
             if dart.x_1 is not None and dart.x_2 is not None:
+                ok = True
                 print(f"X 1: {dart.x_1}, X 2: {dart.x_2}")
                 point = triangulator.get_position(dart.x_1, dart.x_2)
                 score = triangulator.get_score(point[0], point[1])
                 self.dartboard.update_dart_position(point[0], point[1])
-                # asyncio.run(self.send_data(point, score))
+                self.send_dart(point, score)
                 print(f"Score: {score}")
                 print(f"X: {point[0]}, Y: {point[1]}")
                 print("--------------------")
@@ -76,26 +79,20 @@ class DartManager:
         detector1.release()
         detector2.release()
 
-    async def send_data(self, point, score):
-        uri = "ws://localhost:8080/ws"
-        data = {
-            "x": point[0],
-            "y": point[1],
-            "score": {
-                "bed": score[0],
-                "segment": score[1],
-                "score": score[2]
-            }
-        }
-        print(json.loads(json.dumps(data)))
-        async with websockets.connect(uri) as websocket:
-            await websocket.send(json.dumps(data))
+    def send_removing_darts(self):
+        event = Message(type="REMOVING_DART", data=None)
+        print(json.dumps(event.to_json()))
+        self.websocket.ws.send(json.dumps(event.to_json()))
+
+    def send_dart(self, point, score):
+        event = Message(type="DART", data=DartData(point, score))
+        print(event.to_json())
+        self.websocket.ws.send(json.dumps(event.to_json()))
 
     def on_message(self, ws, message):
         print(f"Received message: {message}")
         # Parse message and make it into an object EventData
         message = json.loads(message, object_hook=lambda d: Message(**d))
-
         if message.type == "GAME_START":
             print("GAME ON")
             Thread(target=self.update, daemon=True).start()
@@ -116,10 +113,17 @@ class DartManager:
 
 
 def main():
-    dartboard = Dartboard()
-    dart_manager = DartManager(dartboard=dartboard, debug=True)
+    env_path = join(dirname(__file__), ".env")
+    load_dotenv(env_path)
+    UUID = os.environ.get("UUID")
 
-    ws = WebSocket(dart_manager.UUID, on_message=dart_manager.on_message)
+    dartboard = Dartboard()
+
+    ws = WebSocket(UUID)
+    dart_manager = DartManager(dartboard=dartboard, websocket=ws, debug=True)
+
+    ws.on_message = dart_manager.on_message
+
     ws_thread = Thread(target=ws.start, daemon=True)
     ws_thread.start()
 
