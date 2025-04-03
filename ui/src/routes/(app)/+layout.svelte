@@ -59,7 +59,7 @@
 				</div>
 			{:else}
 				<div
-					class="bg-baseAlt2 text-txtHint hover:text-txtPrimary mx-auto flex size-10 cursor-pointer items-center justify-center rounded-full text-[12px] font-semibold"
+					class="bg-baseAlt2 text-txtHint hover:text-txtPrimary mx-auto flex size-10 cursor-pointer items-center justify-center rounded-full text-[12px] font-semibold uppercase"
 				>
 					{initials}
 				</div>

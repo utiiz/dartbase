@@ -5,7 +5,7 @@ import cv2
 import json
 from threading import Thread
 from DartDetector import DartDetector, State
-from WebSocket import WebSocket, Message, DartData
+from WebSocket import WebSocket, Message, MessageType
 from Triangulator import Triangulator, Camera
 from Dartboard import Dartboard
 
@@ -61,14 +61,11 @@ class DartManager:
 
             if dart.x_1 is not None and dart.x_2 is not None:
                 ok = True
-                print(f"X 1: {dart.x_1}, X 2: {dart.x_2}")
-                point = triangulator.get_position(dart.x_1, dart.x_2)
-                score = triangulator.get_score(point[0], point[1])
-                self.dartboard.update_dart_position(point[0], point[1])
-                self.send_dart(point, score)
-                print(f"Score: {score}")
-                print(f"X: {point[0]}, Y: {point[1]}")
-                print("--------------------")
+                coordinates = triangulator.get_position(dart.x_1, dart.x_2)
+                score = triangulator.get_score(coordinates[0], coordinates[1])
+                self.dartboard.update_dart_position(
+                    coordinates[0], coordinates[1])
+                self.send_dart(coordinates, score)
                 dart.clear()
 
             # Break the loop on 'q' key press
@@ -80,21 +77,20 @@ class DartManager:
         detector2.release()
 
     def send_removing_darts(self):
-        event = Message(type="REMOVING_DART", data=None)
-        print(json.dumps(event.to_json()))
-        self.websocket.ws.send(json.dumps(event.to_json()))
+        message = Message(type=MessageType.DARTS_REMOVED, data=None)
+        print(message.to_json())
+        self.websocket.ws.send(message.to_json())
 
-    def send_dart(self, point, score):
-        event = Message(type="DART", data=DartData(point, score))
-        print(event.to_json())
-        self.websocket.ws.send(json.dumps(event.to_json()))
+    def send_dart(self, coordinates, score):
+        message = Message(type=MessageType.DART_THROWN,
+                          data=dict(uuid=self.websocket.UUID, coordinates=coordinates, score=score))
+        print(message.to_json())
+        self.websocket.ws.send(message.to_json())
 
     def on_message(self, ws, message):
         print(f"Received message: {message}")
-        # Parse message and make it into an object EventData
         message = json.loads(message, object_hook=lambda d: Message(**d))
-        if message.type == "GAME_START":
-            print("GAME ON")
+        if message.type == MessageType.START_DETECTION:
             Thread(target=self.update, daemon=True).start()
 
     def shutdown(self):

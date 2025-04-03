@@ -2,6 +2,7 @@
 	import Breadcrums from '$lib/breadcrums.svelte';
 	import IconFullscreen from '$lib/icon-fullscreen.svelte';
 	import { createWebsocketStore } from '$lib/stores/websocket';
+	import * as MessageType from '$lib/models/message';
 	import { onMount } from 'svelte';
 
 	let { data } = $props();
@@ -19,9 +20,15 @@
 		const ws = createWebsocketStore();
 		ws.onopen(() => {
 			ws.send({
-				type: 'START',
+				type: MessageType.START_GAME,
 				data: {
-					uuid: data.user?.settings.dartboard
+					uuid: data.user?.settings.dartboard,
+					game_id: data.game_id
+				}
+			});
+			ws.subscribe({
+				callback: (data) => {
+					console.log(data);
 				}
 			});
 		});

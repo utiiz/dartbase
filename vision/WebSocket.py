@@ -1,47 +1,29 @@
+import os
+from os.path import join, dirname
+from dotenv import load_dotenv
 import websocket
 import time
 import json
 import threading
 
 
-class InitData:
-    def __init__(self, uuid):
-        self.uuid = uuid
+class MessageType:
+    DARTBOARD_CONNECTED = "DARTBOARD_CONNECTED"
+    DARTBOARD_DISCONNECTED = "DARTBOARD_DISCONNECTED"
+    DART_THROWN = "DART_THROWN"
+    DARTS_REMOVED = "DARTS_REMOVED"
 
-    def to_json(self):
-        return {
-            "uuid": self.uuid,
-        }
-
-
-class DartData:
-    def __init__(self, point, score):
-        self.x = point[0]
-        self.y = point[1]
-        self.score = {
-            "bed": score[0],
-            "segment": score[1],
-            "score": score[2]
-        }
-
-    def to_json(self):
-        return {
-            "x": self.x,
-            "y": self.y,
-            "score": self.score
-        }
+    START_DETECTION = "START_DETECTION"
+    STOP_DETECTION = "STOP_DETECTION"
 
 
 class Message:
-    def __init__(self, type, data):
+    def __init__(self, type, data=None):
         self.type = type
         self.data = data
 
     def to_json(self):
-        return {
-            "type": self.type,
-            "data": None if self.data is None else self.data.to_json()
-        }
+        return json.dumps(self.__dict__)
 
 
 class WebSocket:
@@ -67,10 +49,10 @@ class WebSocket:
     def on_open(self, ws):
         print("Connection successfully opened")
 
-        init_data = InitData(self.UUID)
-        init_message = Message("INIT", init_data)
-        print(json.dumps(init_message.to_json()))
-        ws.send(json.dumps(init_message.to_json()))
+        msg = Message(type=MessageType.DARTBOARD_CONNECTED,
+                      data=dict(uuid=self.UUID))
+        print(msg.to_json())
+        ws.send(msg.to_json())
 
     def on_close(self, ws, close_status_code, close_msg):
         print(f"Connection closed: {close_status_code} - {close_msg}")
@@ -79,7 +61,10 @@ class WebSocket:
 
 if __name__ == "__main__":
     print("Starting program")
-    ws = WebSocket()
+    env_path = join(dirname(__file__), ".env")
+    load_dotenv(env_path)
+    UUID = os.environ.get("UUID")
+    ws = WebSocket(UUID)
     ws_thread = threading.Thread(target=ws.start, daemon=True)
     ws_thread.start()
 

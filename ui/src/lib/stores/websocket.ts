@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 
-type Event = {
+type Message = {
     type: string;
     data: any;
 }
@@ -14,8 +14,9 @@ export function createWebsocketStore() {
         callback();
     };
 
-    socket.onmessage = (event: Event) => {
-        messages.update((msgs) => [...msgs, JSON.parse(event.data)]);
+    socket.onmessage = (message: Message) => {
+        console.log(message);
+        messages.update((msgs) => [...msgs, JSON.parse(message.data)]);
     };
 
     return {
@@ -23,8 +24,8 @@ export function createWebsocketStore() {
         onopen: (cb: () => void) => {
             callback = cb;
         },
-        send: (event: Event) => {
-            socket.readyState === WebSocket.OPEN && socket.send(JSON.stringify(event));
+        send: (message: Message) => {
+            socket.readyState === WebSocket.OPEN && socket.send(JSON.stringify(message));
         },
         close: () => {
             socket.close();

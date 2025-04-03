@@ -1,12 +1,10 @@
 package handler
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/websocket"
-	"github.com/pocketbase/pocketbase/core"
 	"github.com/utiiz/dartbase/internal/model"
 )
 
@@ -18,49 +16,16 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-func (h *Handler) WS(e *core.RequestEvent, cm *model.ConnectionManager) error {
-	conn, err := upgrader.Upgrade(e.Response, e.Request, nil)
+func (h *Handler) SocketIO(manager *model.Manager, w http.ResponseWriter, r *http.Request) error {
+	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
+		log.Println("WebSocket upgrade failed:", err)
 		return err
 	}
-	defer conn.Close()
 
-	for {
-		var message model.Message
-		if err := conn.ReadJSON(&message); err != nil {
-			log.Println("here read error:", err)
-			break
-		}
-		log.Printf("Received: %s", message)
+	log.Printf("New WebSocket connection: %s", conn.RemoteAddr().String())
 
-		switch message.Type {
-		case "INIT":
-			rawData, _ := json.Marshal(message.Data)
-			var data model.InitEvent
-			if err := json.Unmarshal(rawData, &data); err != nil {
-				log.Println("read error:", err)
-				break
-			}
-			log.Printf("Received: %s", data.UUID)
-			cm.Register(data.UUID, conn)
-		case "START":
-			rawData, _ := json.Marshal(message.Data)
-			var data model.StartEvent
-			if err := json.Unmarshal(rawData, &data); err != nil {
-				log.Println("read error:", err)
-				break
-			}
-			uuid := data.UUID
-			log.Printf("Received: %s", data.UUID)
-			event := model.Message{Type: "GAME_START"}
-			d, err := json.Marshal(event)
-			if err != nil {
-				log.Print(err)
-			}
-			log.Printf("Sending: %s", d)
+	go manager.Read(conn)
 
-			cm.Send([]byte(d), uuid)
-		}
-	}
 	return nil
 }

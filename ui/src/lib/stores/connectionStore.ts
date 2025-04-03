@@ -1,4 +1,3 @@
-// src/lib/stores/connectionStore.js
 import { browser } from '$app/environment';
 import { readable, derived } from 'svelte/store';
 import { onMount, onDestroy } from 'svelte';

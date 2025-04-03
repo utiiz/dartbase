@@ -1,6 +1,7 @@
 import pb from '$lib/pocketbase';
 import { redirect, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from '../count-up/$types';
+import type * as Kit from '@sveltejs/kit';
 
 interface Dart {
 	x: number;
@@ -18,7 +19,14 @@ interface Game {
 	visits: Visit[];
 }
 
-export const load: PageServerLoad = async () => {
+type RouteParams = {
+	id: string
+}
+
+export type PageLoad = Kit.Load<RouteParams>;
+
+export const load: PageLoad = async ({ params }) => {
+	console.log(params.id);
 	if (!pb.authStore.isValid) {
 		throw redirect(303, '/login');
 	}
@@ -71,7 +79,7 @@ export const load: PageServerLoad = async () => {
 		]
 	};
 
-	return { user: pb.authStore.model, game };
+	return { user: pb.authStore.model, game, game_id: params.id };
 };
 
 export const actions: Actions = {

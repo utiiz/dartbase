@@ -80,7 +80,6 @@ export const load: PageServerLoad = async () => {
 export const actions: Actions = {
 	startGame: async ({ request }) => {
 		const form = await superValidate(request, zod(gameSchema));
-		console.log(form);
 		form.data.players.map((player: Player) => console.log(player));
 		if (form.valid) {
 			const game = await pb.collection('games').create({
