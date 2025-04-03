@@ -77,13 +77,18 @@ class DartManager:
         detector2.release()
 
     def send_removing_darts(self):
-        message = Message(type=MessageType.DARTS_REMOVED, data=None)
+        message = Message(type=MessageType.DARTS_REMOVED,
+                          data=dict(uuid=self.websocket.UUID))
         print(message.to_json())
         self.websocket.ws.send(message.to_json())
 
     def send_dart(self, coordinates, score):
         message = Message(type=MessageType.DART_THROWN,
-                          data=dict(uuid=self.websocket.UUID, coordinates=coordinates, score=score))
+                          data=dict(uuid=self.websocket.UUID,
+                                    coordinates=coordinates,
+                                    bed=score[0],
+                                    segment=score[1],
+                                    score=score[2]))
         print(message.to_json())
         self.websocket.ws.send(message.to_json())
 

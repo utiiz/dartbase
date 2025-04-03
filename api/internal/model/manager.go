@@ -60,6 +60,8 @@ func (m *Manager) HandleMessage(conn *websocket.Conn, msg Message) {
 		m.HandleDartboardDisconnected(conn, msg)
 	case DartThrown:
 		m.HandleDartThrown(conn, msg)
+	case DartsRemoved:
+		m.HandleDartsRemoved(conn, msg)
 	case StartGame:
 		m.HandleStartGame(conn, msg)
 	}
@@ -188,6 +190,41 @@ func (m *Manager) HandleDartThrown(conn *websocket.Conn, msg Message) {
 
 	msg = Message{
 		Type: DartThrown,
+		Data: data,
+	}
+	game, ok := m.Games[dartboard.GameID]
+	if ok {
+		for _, c := range game.Players {
+			if c != conn {
+				if err := m.Send(c, msg); err != nil {
+					log.Println("Failed to send message:", err)
+				}
+			}
+		}
+	}
+}
+
+func (m *Manager) HandleDartsRemoved(conn *websocket.Conn, msg Message) {
+	data, ok := msg.Data.(map[string]any)
+	if !ok {
+		log.Println("HandleDartsRemoved - Invalid data:", msg.Data)
+		return
+	}
+
+	uuid, ok := data["uuid"].(string)
+	if !ok {
+		log.Println("HandleDartsRemoved - Invalid UUID:", data["uuid"])
+		return
+	}
+
+	dartboard, ok := m.Dartboards[uuid]
+	if !ok {
+		log.Println("HandleDartsRemoved - Dartboard not found:", uuid)
+		return
+	}
+
+	msg = Message{
+		Type: DartsRemoved,
 		Data: data,
 	}
 	game, ok := m.Games[dartboard.GameID]
