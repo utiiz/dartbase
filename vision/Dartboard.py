@@ -12,14 +12,14 @@ class Dartboard:
         self.canvas_width = 600
         self.canvas_height = 600
         self.num_divisions = 20
-        self.radius = 200
-        self.canvas = tk.Canvas(self.root, width=self.canvas_width,
-                                height=self.canvas_height, bg="black")
+        self.radius = 300
+        self.canvas = tk.Canvas(self.root, width=self.canvas_width + 100,
+                                height=self.canvas_height + 100, bg="#1A1A24")
 
         self.dart = None
 
-        self.center_x = self.canvas_width // 2
-        self.center_y = self.canvas_height // 2
+        self.center_x = (self.canvas_width + 100) // 2
+        self.center_y = (self.canvas_height + 100) // 2
         self.canvas.configure(scrollregion=(-self.center_x, -self.center_y,
                                             self.center_x, self.center_y))
         self.canvas.pack()
@@ -39,10 +39,10 @@ class Dartboard:
 
     def draw_radial_grid(self):
         # Method 2: Using PIL/Pillow (recommended, supports more formats and resizing)
-        pil_img = Image.open("./images/Dartboard.png")
+        pil_img = Image.open("./images/dartboard2.png")
         # Optional: resize the image if needed
         pil_img = pil_img.resize(
-            (self.radius * 2 + 133, self.radius * 2 + 133), Image.LANCZOS)
+            (self.radius * 2, self.radius * 2), Image.LANCZOS)
         tk_img = ImageTk.PhotoImage(pil_img)
 
         # Add image to canvas (position it where you want)

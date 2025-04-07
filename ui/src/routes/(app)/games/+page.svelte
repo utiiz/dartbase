@@ -141,13 +141,13 @@
 							enabled={data.user?.settings?.dartboard}
 						>
 							<div class="align-center ml-1.5 flex items-center justify-between">
-								<div class="text-txtHint text-sm">Maximum of 5 players</div>
+								<div class="text-txtHint text-sm">Maximum of 2 players</div>
 								<Button
 									left_icon={IconPlus}
 									text="Add player"
 									type="button"
 									onclick={addPlayer}
-									disabled={$form.players.length >= 5}
+									disabled={$form.players.length >= 2}
 								/>
 							</div>
 							<div

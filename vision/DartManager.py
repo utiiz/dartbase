@@ -30,10 +30,10 @@ class DartManager:
 
     def update(self):
         detector1 = DartDetector(
-            video_source='./videos/CAM_01_03.mp4',
+            video_source='./videos/CAM_01_04.mp4',
             dartboard_line=347, frame_rate=self.frame_rate, debug=self.debug)
         detector2 = DartDetector(
-            video_source='./videos/CAM_02_03.mp4',
+            video_source='./videos/CAM_02_04.mp4',
             dartboard_line=330, frame_rate=self.frame_rate, debug=self.debug)
 
         camera_a = Camera(angle=45, fov=73.4)

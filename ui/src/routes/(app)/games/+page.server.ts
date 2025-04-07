@@ -86,7 +86,7 @@ export const actions: Actions = {
 				settings: {
 					visits: form.data.visits,
 				},
-				type: form.data.gameType,
+				type: form.data.gameType.id,
 				players: form.data.players.map(player => player.id)
 			});
 			throw redirect(303, `/games/${game.id}`);
