@@ -1,6 +1,6 @@
 vision/*Zone.Identifier
-vision/videos/
 vision/__pycache__/
+#vision/videos/
 
 api/tmp/
 api/pb_data/
