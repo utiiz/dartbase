@@ -8,6 +8,7 @@
 	let { data } = $props();
 
 	let game = $state(data.game);
+	const double_out = false;
 
 	onMount(() => {
 		const ws = createWebsocketStore();
@@ -37,7 +38,7 @@
 					let bust = false;
 					if (
 						player.score - message.data.score < 0 ||
-						(player.score - message.data.score === 0 && message.data.bed != 'D')
+						(player.score - message.data.score === 0 && message.data.bed != 'D' && double_out)
 					) {
 						bust = true;
 					}
@@ -52,14 +53,29 @@
 				}
 
 				let score =
-					player?.visits.reduce((t: number, n: { darts: { score: number; bust: boolean }[] }) => {
-						const hasBusts = n.darts.some((d) => d.bust);
-						if (hasBusts) {
-							return t;
-						}
-						return t + (n.darts?.reduce((t: number, n: { score: number }) => t - n.score, 0) || 0);
-					}, game.type.settings.starts_on) || game.type.settings.starts_on;
+					player?.visits.reduce(
+						(score: number, visit: { darts: { score: number; bust: boolean }[] }) => {
+							const hasBusts = visit.darts.some((d) => d.bust);
+							if (hasBusts) {
+								return score;
+							}
+							return (
+								score -
+								(visit.darts?.reduce((t: number, n: { score: number }) => t + n.score, 0) || 0)
+							);
+						},
+						game.type.settings.starts_on
+					) || game.type.settings.starts_on;
 
+				if (score === 0) {
+					ws.send({
+						type: MessageType.END_GAME,
+						data: {
+							uuid: data.user?.settings.dartboard,
+							game_id: data.game_id
+						}
+					});
+				}
 				player.score = score;
 			}
 			if (message.type === MessageType.DARTS_REMOVED) {

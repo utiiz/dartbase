@@ -98,6 +98,9 @@ class DartManager:
         if message.type == MessageType.START_DETECTION:
             Thread(target=self.update, daemon=True).start()
 
+        if message.type == MessageType.STOP_DETECTION:
+            self.shutdown()
+
     def shutdown(self):
         """Properly shut down all components"""
         print("Shutting down DartManager...")

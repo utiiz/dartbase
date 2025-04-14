@@ -64,6 +64,8 @@ func (m *Manager) HandleMessage(conn *websocket.Conn, msg Message) {
 		m.HandleDartsRemoved(conn, msg)
 	case StartGame:
 		m.HandleStartGame(conn, msg)
+	case EndGame:
+		m.HandleEndGame(conn, msg)
 	}
 }
 
@@ -128,7 +130,7 @@ func (m *Manager) HandleStartGame(conn *websocket.Conn, msg Message) {
 
 	gameID, ok := data["game_id"].(string)
 	if !ok {
-		log.Println("HandleStartGame - Invalid UUID:", data["uuid"])
+		log.Println("HandleStartGame - Invalid GameID:", data["game_id"])
 		return
 	}
 
@@ -162,6 +164,49 @@ func (m *Manager) HandleStartGame(conn *websocket.Conn, msg Message) {
 
 	msg = Message{
 		Type: StartDetection,
+		Data: nil,
+	}
+	if err := m.Send(dartboard.Conn, msg); err != nil {
+		log.Println("Failed to send message:", err)
+	}
+}
+
+func (m *Manager) HandleEndGame(conn *websocket.Conn, msg Message) {
+	log.Println("HandleEndGame", msg.Data)
+	data, ok := msg.Data.(map[string]any)
+	if !ok {
+		log.Println("HandleEndGame - Invalid data:", msg.Data)
+		return
+	}
+
+	uuid, ok := data["uuid"].(string)
+	if !ok {
+		log.Println("HandleEndGame - Invalid UUID:", data["uuid"])
+		return
+	}
+
+	gameID, ok := data["game_id"].(string)
+	if !ok {
+		log.Println("HandleEndGame - Invalid GameID:", data["game_id"])
+		return
+	}
+
+	dartboard, ok := m.Dartboards[uuid]
+	if !ok {
+		log.Println("HandleEndGame - Dartboard not found:", uuid)
+		return
+	}
+	m.Mutex.Lock()
+	defer m.Mutex.Unlock()
+
+	for _, c := range m.Games {
+		if c.ID == gameID {
+			delete(m.Games, gameID)
+		}
+	}
+
+	msg = Message{
+		Type: StopDetection,
 		Data: nil,
 	}
 	if err := m.Send(dartboard.Conn, msg); err != nil {
